@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Meal Planning Service is an AI-powered household food management system designed for a family of four (two adults and two children). The service addresses the "third shift" burden of meal planning and food logistics by automating the entire process from menu creation to grocery shopping. By integrating with the family calendar, tracking food inventory with expiration dates, managing dietary profiles, generating weekly menus with recipes, and autonomously placing grocery orders through delivery services, the system relieves parents from the mental load of daily food decisions.
+ThirdShift is an AI-powered household food management system designed for a family of four (two adults and two children). The service addresses the "third shift" burden of meal planning and food logistics by automating the entire process from menu creation to grocery shopping. By leveraging artificial intelligence to understand family context and preferences, integrating with the family calendar, tracking food inventory with expiration dates, managing dietary profiles, generating personalized weekly menus with recipes, and autonomously placing grocery orders through delivery services, the system relieves parents from the mental load of daily food decisions.
 
 The primary goals of the Meal Planning Service are to:
 - **Relieve the third shift**: Eliminate the daily mental burden of deciding what to cook, what to buy, and what the family needs
@@ -13,10 +13,11 @@ The primary goals of the Meal Planning Service are to:
 
 ## Glossary
 
-- **Meal Planning Service**: The AI-powered system that manages meal planning, inventory, and grocery shopping for the household
+- **ThirdShift**: The AI-powered system that manages meal planning, inventory, and grocery shopping for the household
+- **AI Service**: Artificial intelligence service (AWS Bedrock) used for intelligent menu generation, recipe adaptation, and pattern learning
 - **Family Calendar**: The digital calendar system containing family events, activities, and schedules
 - **Food Inventory System**: The component that tracks current food stock and expiration dates
-- **Menu Generator**: The component that creates weekly meal plans with recipes
+- **Menu Generator**: The AI-powered component that creates personalized weekly meal plans with recipes
 - **Shopping Agent**: The component that autonomously places grocery orders
 - **Oda Integration**: The interface to the Oda grocery delivery service
 - **Calendar Integration**: The interface to the family's calendar system
@@ -45,8 +46,8 @@ The primary goals of the Meal Planning Service are to:
 
 1. WHEN the Weekly Planning Cycle begins, THE Meal Planning Service SHALL retrieve all events from the Family Calendar for the upcoming week
 2. WHEN a Special Event is detected in the Family Calendar, THE Meal Planning Service SHALL adjust meal planning to accommodate the event requirements
-3. THE Menu Generator SHALL create a seven-day meal plan with breakfast, lunch, and dinner for four people
-4. WHEN generating the meal plan, THE Menu Generator SHALL retrieve recipes from the Recipe Database
+3. THE Menu Generator SHALL create a personalized seven-day meal plan with breakfast, lunch, and dinner for four people using the AI Service
+4. WHEN generating the meal plan, THE Menu Generator SHALL use the AI Service to create recipes that match family preferences and constraints
 5. THE Meal Planning Service SHALL provide the complete weekly menu with recipe links within two hours of the Weekly Planning Cycle start
 
 ### Requirement 2
@@ -118,8 +119,8 @@ The primary goals of the Meal Planning Service are to:
 1. THE Profile Management UI SHALL allow users to create and edit Family Member Profiles with name, age, Dietary Restrictions, food preferences, dislikes, allergies, and Cooking Expertise Level
 2. THE Profile Management UI SHALL allow users to create Guest Profiles with dietary information and expected visit dates
 3. THE Meal Planning Service SHALL store all Family Member Profiles and Guest Profiles securely
-4. WHEN generating meal plans, THE Menu Generator SHALL exclude recipes containing ingredients that match any person's allergies or Dietary Restrictions
-5. THE Menu Generator SHALL prioritize recipes that align with the food preferences of Family Member Profiles and Guest Profiles
+4. WHEN generating meal plans, THE Menu Generator SHALL use the AI Service to exclude recipes containing ingredients that match any person's allergies or Dietary Restrictions
+5. THE Menu Generator SHALL use the AI Service to create recipes that align with the food preferences of Family Member Profiles and Guest Profiles
 
 ### Requirement 8
 
@@ -128,8 +129,8 @@ The primary goals of the Meal Planning Service are to:
 #### Acceptance Criteria
 
 1. WHEN the Weekly Planning Cycle begins, THE Meal Planning Service SHALL determine the Availability Status of each family member for each meal by analyzing the Family Calendar
-2. WHEN a family member's Availability Status indicates absence for a meal, THE Menu Generator SHALL adjust portion sizes accordingly
-3. WHEN a Guest Profile indicates a visitor will be present, THE Menu Generator SHALL increase portion sizes to accommodate the additional person
+2. WHEN a family member's Availability Status indicates absence for a meal, THE Menu Generator SHALL use the AI Service to adjust portion sizes and recipe selection accordingly
+3. WHEN a Guest Profile indicates a visitor will be present, THE Menu Generator SHALL use the AI Service to adjust portion sizes and recipe selection to accommodate the additional person
 4. THE Shopping Agent SHALL calculate grocery quantities based on the number of people present for each meal
 5. THE Meal Planning Service SHALL provide a daily summary showing who will be present for each meal
 
@@ -140,10 +141,10 @@ The primary goals of the Meal Planning Service are to:
 #### Acceptance Criteria
 
 1. WHEN the Family Calendar indicates which family member will be cooking a meal, THE Menu Generator SHALL retrieve that person's Cooking Expertise Level from their Family Member Profile
-2. WHEN the Cooking Expertise Level is beginner, THE Menu Generator SHALL select recipes with preparation time under thirty minutes and fewer than ten steps
-3. WHEN the Cooking Expertise Level is intermediate, THE Menu Generator SHALL select recipes with preparation time under sixty minutes and moderate complexity
-4. WHEN the Cooking Expertise Level is advanced, THE Menu Generator SHALL select recipes without complexity restrictions
-5. WHEN no cook is specified in the Family Calendar, THE Menu Generator SHALL default to recipes matching the lowest Cooking Expertise Level among adult family members
+2. WHEN the Cooking Expertise Level is beginner, THE Menu Generator SHALL use the AI Service to generate recipes with preparation time under thirty minutes and fewer than ten steps
+3. WHEN the Cooking Expertise Level is intermediate, THE Menu Generator SHALL use the AI Service to generate recipes with preparation time under sixty minutes and moderate complexity
+4. WHEN the Cooking Expertise Level is advanced, THE Menu Generator SHALL use the AI Service to generate recipes without complexity restrictions
+5. WHEN no cook is specified in the Family Calendar, THE Menu Generator SHALL use the AI Service to generate recipes matching the lowest Cooking Expertise Level among adult family members
 
 ### Requirement 10
 
@@ -151,9 +152,9 @@ The primary goals of the Meal Planning Service are to:
 
 #### Acceptance Criteria
 
-1. THE Menu Generator SHALL include School Lunch planning for each child on school days
-2. WHEN a school day is detected in the Family Calendar, THE Menu Generator SHALL create a portable, child-appropriate lunch menu
-3. THE Menu Generator SHALL ensure School Lunch items are age-appropriate, nutritious, and align with each child's dietary profile
+1. THE Menu Generator SHALL use the AI Service to include School Lunch planning for each child on school days
+2. WHEN a school day is detected in the Family Calendar, THE Menu Generator SHALL use the AI Service to create a portable, child-appropriate lunch menu
+3. THE Menu Generator SHALL use the AI Service to ensure School Lunch items are age-appropriate, nutritious, and align with each child's dietary profile
 4. THE Shopping Agent SHALL include all School Lunch ingredients in the weekly grocery order
 5. THE Meal Planning Service SHALL provide a daily reminder with the School Lunch menu and preparation instructions
 

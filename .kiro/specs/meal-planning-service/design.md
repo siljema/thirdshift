@@ -8,6 +8,7 @@ ThirdShift is a serverless, event-driven system deployed on AWS that automates h
 
 - **Serverless Architecture**: Utilize AWS managed services to minimize operational overhead
 - **Event-Driven**: Trigger workflows based on schedules and state changes
+- **AI-Powered**: Leverage AWS Bedrock for intelligent menu generation, recipe adaptation, and pattern learning
 - **Modular Components**: Separate concerns for calendar, inventory, menu generation, and shopping
 - **Security First**: Secure storage of credentials, PII, and payment information
 - **Cost Optimization**: Minimize AWS costs through efficient resource usage and serverless pricing
@@ -260,14 +261,14 @@ graph TB
 - Ingredient requirements
 
 **AWS Services**:
-- Lambda function (may need higher memory/timeout for AI processing)
+- Lambda function (higher memory/timeout for AI processing)
 - DynamoDB for meal plans
 - S3 for storing detailed meal plan documents
-- Bedrock (optional: for AI-powered recipe generation)
+- **Bedrock** (Claude 3 Sonnet for AI-powered menu generation and recipe adaptation)
 
 **External Integrations**:
 - Recipe APIs (Spoonacular, Edamam, TheMealDB)
-- OpenAI API (optional: for custom recipe adaptation)
+- AWS Bedrock (Claude 3 or other models for AI-powered features)
 
 **Data Model**:
 ```json
@@ -309,17 +310,23 @@ graph TB
    - Cooking expertise levels
    - Budget limits
    - School lunch requirements (5 days/week for 2 children)
-3. Query recipe APIs with filters
-4. Score recipes based on:
-   - Uses expiring ingredients (+high score)
-   - Matches preferences (+medium score)
-   - Fits cook's expertise level (+medium score)
-   - Within budget (+high score)
-   - Nutritional balance (+low score)
-5. Select recipes ensuring variety (no repeats within 2 weeks)
-6. Generate school lunch menus (portable, child-friendly)
-7. Calculate total ingredient requirements
-8. Store meal plan in DynamoDB and detailed version in S3
+3. **Use AWS Bedrock (Claude 3) to generate intelligent meal plan**:
+   - Provide AI with all constraints and context
+   - Request personalized meal suggestions that use expiring ingredients
+   - Ask AI to adapt recipes for dietary restrictions
+   - Generate creative school lunch ideas
+   - Ensure variety and nutritional balance
+4. Fallback to recipe APIs if Bedrock unavailable
+5. Score and validate AI-generated recipes
+6. Calculate total ingredient requirements
+7. Store meal plan in DynamoDB and detailed version in S3
+
+**AI Prompt Strategy**:
+- Use structured prompts with JSON output format
+- Include family preferences, dietary restrictions, and expiring ingredients
+- Request recipes with specific cooking time and difficulty constraints
+- Ask for ingredient substitutions when needed
+- Generate shopping-optimized ingredient lists
 
 ### 5. Shopping Agent Component
 
@@ -804,13 +811,14 @@ graph TB
 ### Technology Stack Summary
 - **Product Name**: ThirdShift
 - **Compute**: AWS Lambda (Node.js 18.x or Python 3.11)
+- **AI/ML**: AWS Bedrock (Claude 3 Sonnet, Anthropic)
 - **Orchestration**: AWS Step Functions, EventBridge
 - **Storage**: DynamoDB, S3
 - **API**: API Gateway (REST)
 - **Security**: Cognito, Secrets Manager, IAM
 - **Notifications**: SNS, SES
 - **Monitoring**: CloudWatch, X-Ray
-- **IaC**: AWS CDK (TypeScript) or Terraform
+- **IaC**: Terraform
 
 ### External API Dependencies
 - Calendar: Google Calendar API, Microsoft Graph API
