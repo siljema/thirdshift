@@ -1,0 +1,23 @@
+{
+  "name": "thirdshift-inventory-manager",
+  "version": "1.0.0",
+  "description": "ThirdShift Inventory Manager Lambda Function",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "npm run build && cp -r node_modules dist/ && cd dist && zip -r ../inventory-manager.zip .",
+    "deploy": "npm run package && aws lambda update-function-code --function-name thirdshift-dev-inventory-manager --zip-file fileb://inventory-manager.zip --region us-west-2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.450.0",
+    "@aws-sdk/lib-dynamodb": "^3.450.0",
+    "@aws-sdk/client-secrets-manager": "^3.450.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2"
+  }
+}

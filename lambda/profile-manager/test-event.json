@@ -1,0 +1,4 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"type\":\"family_member\",\"name\":\"Test User\",\"age\":35,\"role\":\"adult\",\"dietaryRestrictions\":[\"gluten-free\"],\"allergies\":[\"peanuts\"],\"dislikes\":[\"mushrooms\"],\"preferences\":[\"italian\"],\"cookingExpertiseLevel\":\"intermediate\"}"
+}

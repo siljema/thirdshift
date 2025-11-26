@@ -1,0 +1,93 @@
+{
+  "weekStartDate": "2025-12-02",
+  "profiles": [
+    {
+      "profileId": "profile-1",
+      "name": "Mom",
+      "type": "family_member",
+      "role": "adult",
+      "age": 38,
+      "dietaryRestrictions": ["gluten-free"],
+      "allergies": [],
+      "dislikes": ["mushrooms"],
+      "preferences": ["italian", "asian"],
+      "cookingExpertiseLevel": "intermediate"
+    },
+    {
+      "profileId": "profile-2",
+      "name": "Dad",
+      "type": "family_member",
+      "role": "adult",
+      "age": 40,
+      "dietaryRestrictions": [],
+      "allergies": [],
+      "dislikes": ["olives"],
+      "preferences": ["mexican", "bbq"],
+      "cookingExpertiseLevel": "beginner"
+    },
+    {
+      "profileId": "profile-3",
+      "name": "Child 1",
+      "type": "family_member",
+      "role": "child",
+      "age": 10,
+      "dietaryRestrictions": [],
+      "allergies": ["peanuts"],
+      "dislikes": ["broccoli"],
+      "preferences": ["pasta", "pizza"]
+    },
+    {
+      "profileId": "profile-4",
+      "name": "Child 2",
+      "type": "family_member",
+      "role": "child",
+      "age": 7,
+      "dietaryRestrictions": [],
+      "allergies": ["peanuts"],
+      "dislikes": ["fish"],
+      "preferences": ["chicken", "rice"]
+    }
+  ],
+  "inventory": [
+    {
+      "itemId": "inv-1",
+      "name": "Milk",
+      "category": "dairy",
+      "quantity": 2,
+      "unit": "liters",
+      "expirationDate": "2025-12-04",
+      "location": "Fridge"
+    },
+    {
+      "itemId": "inv-2",
+      "name": "Eggs",
+      "category": "dairy",
+      "quantity": 12,
+      "unit": "pieces",
+      "expirationDate": "2025-12-10",
+      "location": "Fridge"
+    },
+    {
+      "itemId": "inv-3",
+      "name": "Chicken Breast",
+      "category": "meat",
+      "quantity": 1,
+      "unit": "kg",
+      "expirationDate": "2025-12-03",
+      "location": "Fridge"
+    }
+  ],
+  "availabilityMatrix": {
+    "2025-12-02": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" }
+    },
+    "2025-12-03": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" }
+    }
+  },
+  "budget": 1200
+}

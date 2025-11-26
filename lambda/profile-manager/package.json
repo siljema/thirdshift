@@ -1,0 +1,22 @@
+{
+  "name": "thirdshift-profile-manager",
+  "version": "1.0.0",
+  "description": "ThirdShift Profile Manager Lambda Function",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "npm run build && cd dist && zip -r ../profile-manager.zip .",
+    "deploy": "npm run package && aws lambda update-function-code --function-name thirdshift-dev-profile-manager --zip-file fileb://profile-manager.zip"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.450.0",
+    "@aws-sdk/lib-dynamodb": "^3.450.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "action": "add",
+  "data": {
+    "name": "Milk",
+    "category": "dairy",
+    "quantity": 2,
+    "unit": "liters",
+    "expirationDate": "2025-12-05",
+    "location": "fridge",
+    "cost": 45
+  }
+}
