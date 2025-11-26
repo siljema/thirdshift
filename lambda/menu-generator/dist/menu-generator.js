@@ -10,12 +10,32 @@ class MenuGenerator {
         this.repository = new repository_1.MenuRepository();
         this.useBedrock = process.env.USE_BEDROCK === 'true';
     }
+    async getBudgetInfo() {
+        try {
+            const budgetData = await this.repository.getCurrentBudget();
+            if (!budgetData) {
+                console.log('No budget configured');
+                return null;
+            }
+            return {
+                totalBudget: budgetData.amount,
+                spent: budgetData.spent || 0,
+                remaining: budgetData.amount - (budgetData.spent || 0),
+                period: budgetData.period
+            };
+        }
+        catch (error) {
+            console.warn('Could not fetch budget info:', error);
+            return null;
+        }
+    }
     async generateWeeklyMenu(input) {
         console.log('Generating weekly menu with input:', JSON.stringify(input, null, 2));
         // Get data from repository or use provided data
         let profiles = input.profiles || [];
         let inventory = input.inventory || [];
         let expiringItems = [];
+        let budgetInfo = null;
         try {
             if (!input.profiles) {
                 profiles = await this.repository.getAllProfiles();
@@ -24,6 +44,18 @@ class MenuGenerator {
                 inventory = await this.repository.getAllInventory();
             }
             expiringItems = await this.repository.getExpiringInventory(3);
+            // Get budget info if not provided
+            if (!input.budget) {
+                budgetInfo = await this.getBudgetInfo();
+            }
+            else {
+                budgetInfo = {
+                    totalBudget: input.budget,
+                    spent: 0,
+                    remaining: input.budget,
+                    period: 'weekly'
+                };
+            }
         }
         catch (error) {
             console.warn('Could not fetch from repository, using provided data:', error);
@@ -39,11 +71,15 @@ class MenuGenerator {
             }
         }
         console.log(`Found ${profiles.length} profiles, ${inventory.length} inventory items, ${expiringItems.length} expiring items`);
-        // Generate meal plan
+        if (budgetInfo) {
+            console.log(`Budget: ${budgetInfo.remaining} NOK remaining of ${budgetInfo.totalBudget} NOK (${budgetInfo.period})`);
+        }
+        // Generate meal plan with budget constraint
         let meals;
+        const budgetConstraint = budgetInfo?.remaining || input.budget;
         if (this.useBedrock) {
             try {
-                meals = await this.generateWithBedrock(profiles, inventory, expiringItems, input);
+                meals = await this.generateWithBedrock(profiles, inventory, expiringItems, input, budgetConstraint);
             }
             catch (error) {
                 console.error('Bedrock generation failed, using mock:', error);
@@ -58,6 +94,14 @@ class MenuGenerator {
         const { inventoryUsage, shoppingList } = this.buildInventoryAndShoppingList(meals, inventory, expiringItems);
         // Calculate total cost
         const totalCost = shoppingList.reduce((sum, item) => sum + (item.estimatedCost || 0), 0);
+        // Validate budget constraint
+        if (budgetConstraint && totalCost > budgetConstraint) {
+            console.warn(`Meal plan exceeds budget: ${totalCost} NOK > ${budgetConstraint} NOK`);
+            console.warn('Shopping Agent will need to optimize the shopping list');
+        }
+        else if (budgetConstraint) {
+            console.log(`Meal plan within budget: ${totalCost} NOK <= ${budgetConstraint} NOK`);
+        }
         // Create meal plan
         const weekStart = input.weekStartDate || this.getNextMonday();
         const weekEnd = this.addDays(weekStart, 6);
@@ -83,12 +127,12 @@ class MenuGenerator {
         console.log(`Generated meal plan ${mealPlan.mealPlanId} with ${meals.length} meals`);
         return mealPlan;
     }
-    async generateWithBedrock(profiles, inventory, expiringItems, input) {
+    async generateWithBedrock(profiles, inventory, expiringItems, input, budgetConstraint) {
         const prompt = this.bedrockClient.buildMealPlanPrompt({
             profiles,
             inventory,
             availability: input.availabilityMatrix,
-            budget: input.budget,
+            budget: budgetConstraint,
             expiringItems
         });
         const response = await this.bedrockClient.generateMealPlan(prompt);

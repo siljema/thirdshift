@@ -1,0 +1,24 @@
+{
+  "weekStartDate": "2025-12-02",
+  "profiles": [
+    {
+      "profileId": "profile-1",
+      "name": "Mom",
+      "type": "family_member",
+      "role": "adult",
+      "age": 38,
+      "cookingExpertiseLevel": "intermediate"
+    },
+    {
+      "profileId": "profile-2",
+      "name": "Dad",
+      "type": "family_member",
+      "role": "adult",
+      "age": 40,
+      "cookingExpertiseLevel": "beginner"
+    }
+  ],
+  "inventory": [],
+  "availabilityMatrix": {},
+  "budget": 400
+}

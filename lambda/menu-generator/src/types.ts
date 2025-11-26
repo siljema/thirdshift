@@ -68,3 +68,10 @@ export interface MenuGenerationInput {
   budget?: number;
   weekStartDate?: string;
 }
+
+export interface BudgetInfo {
+  totalBudget: number;
+  spent: number;
+  remaining: number;
+  period: 'weekly' | 'monthly';
+}

@@ -46,6 +46,18 @@
       "allergies": ["peanuts"],
       "dislikes": ["fish"],
       "preferences": ["chicken", "rice"]
+    },
+    {
+      "profileId": "profile-5",
+      "name": "Guest",
+      "type": "guest",
+      "role": "adult",
+      "age": 35,
+      "dietaryRestrictions": ["vegetarian"],
+      "allergies": [],
+      "dislikes": [],
+      "preferences": ["mediterranean"],
+      "visitDates": ["2025-12-04"]
     }
   ],
   "inventory": [
@@ -81,12 +93,49 @@
     "2025-12-02": {
       "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
       "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
-      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" }
+      "dinner": { 
+        "present": ["Mom", "Dad", "Child 2"], 
+        "cook": "Mom",
+        "specialRequirements": ["Child 1 at sleepover - only 3 people for dinner"]
+      }
     },
     "2025-12-03": {
       "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
       "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
       "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" }
+    },
+    "2025-12-04": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "dinner": { 
+        "present": ["Mom", "Dad", "Child 1", "Child 2", "Guest"], 
+        "cook": "Mom",
+        "specialRequirements": ["Extra guest for dinner - 5 people total"]
+      }
+    },
+    "2025-12-05": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" }
+    },
+    "2025-12-06": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "lunch": { 
+        "present": ["Mom", "Dad", "Child 1", "Child 2"], 
+        "cook": "Dad",
+        "specialRequirements": ["Child 1 on field trip - lunch provided by school, only pack lunch for Child 2"]
+      },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" }
+    },
+    "2025-12-07": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" }
+    },
+    "2025-12-08": {
+      "breakfast": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" },
+      "lunch": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Dad" },
+      "dinner": { "present": ["Mom", "Dad", "Child 1", "Child 2"], "cook": "Mom" }
     }
   },
   "budget": 1200

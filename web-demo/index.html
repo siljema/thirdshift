@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThirdShift Demo</title>
+    <link rel="icon" type="image/png" href="images/smal_logo.png">
     <style>
         * {
             margin: 0;
@@ -27,6 +28,14 @@
             text-align: center;
             color: white;
             margin-bottom: 40px;
+        }
+
+        .main-logo {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
         h1 {
@@ -188,6 +197,14 @@
             margin-bottom: 30px;
         }
 
+        .calendar-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         .meal-plan-header h2 {
             color: #667eea;
             font-size: 2em;
@@ -210,6 +227,93 @@
         }
 
         .meta-item strong {
+            color: #333;
+        }
+
+        .budget-status {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .budget-status.within-budget {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .budget-status.over-budget {
+            border-color: #ff6b6b;
+            background: #ffebee;
+        }
+
+        .budget-status.warning {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+
+        .budget-header {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .budget-bar-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .budget-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .budget-bar.good {
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
+        }
+
+        .budget-bar.warning {
+            background: linear-gradient(90deg, #ff9800, #ffa726);
+        }
+
+        .budget-bar.danger {
+            background: linear-gradient(90deg, #ff6b6b, #ff5252);
+        }
+
+        .budget-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .budget-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .budget-detail-label {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .budget-detail-value {
+            font-weight: bold;
+            font-size: 1.1em;
             color: #333;
         }
 
@@ -331,7 +435,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>🍽️ ThirdShift</h1>
+            <img src="images/big_logo.png" alt="ThirdShift Logo" class="main-logo">
             <p class="subtitle">AI-Powered Meal Planning & Grocery Automation</p>
             <p class="subtitle" style="font-size: 0.9em; margin-top: 10px;">Demo Dashboard</p>
         </header>
@@ -388,9 +492,9 @@
 
             <!-- Budget Tracker -->
             <div class="card">
-                <h2>💰 Budget Tracker <span class="status-badge pending">Pending</span></h2>
+                <h2>💰 Budget Tracker <span class="status-badge working">✓ Working</span></h2>
                 <p>Monitor spending, enforce budget limits, and generate financial reports.</p>
-                <button disabled>Coming Soon</button>
+                <button onclick="testBudgetTracker()">Test Budget Tracker</button>
                 <div id="budget-result" class="result" style="display:none;"></div>
             </div>
         </div>
@@ -398,6 +502,7 @@
         <!-- Meal Plan Calendar View -->
         <div id="meal-plan-calendar" class="meal-plan-container">
             <div class="meal-plan-header">
+                <img src="images/smal_logo.png" alt="ThirdShift" class="calendar-logo">
                 <h2>📅 Weekly Meal Plan</h2>
                 <div class="meal-plan-meta">
                     <div class="meta-item">
@@ -412,6 +517,11 @@
                         <span>💰</span>
                         <span><strong>Estimated Cost:</strong> <span id="total-cost"></span> NOK</span>
                     </div>
+                </div>
+                
+                <!-- Budget Status Bar -->
+                <div id="budget-status" class="budget-status">
+                    <!-- Budget info will be populated here -->
                 </div>
             </div>
 

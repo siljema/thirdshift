@@ -8,8 +8,10 @@ AI-powered menu generation service for ThirdShift meal planning system.
 - **Dietary Constraints**: Respects allergies, dietary restrictions, and preferences
 - **Expiring Ingredients**: Prioritizes ingredients approaching expiration
 - **Cooking Expertise**: Matches recipe difficulty to cook's skill level
-- **Budget Awareness**: Generates meals within budget constraints
-- **Shopping List**: Automatically creates shopping list from meal plan
+- **Budget Integration**: Automatically fetches budget from Budget Tracker and generates cost-conscious meal plans
+- **Cost Estimation**: Provides estimated costs for each meal and shopping item
+- **Shopping List**: Automatically creates shopping list from meal plan with cost breakdown
+- **Inventory Usage**: Tracks what ingredients are used from existing inventory vs. what needs to be purchased
 
 ## Architecture
 
@@ -41,6 +43,7 @@ AI-powered menu generation service for ThirdShift meal planning system.
 - `MEAL_PLANS_TABLE` - DynamoDB table for meal plans
 - `PROFILES_TABLE` - DynamoDB table for profiles
 - `INVENTORY_TABLE` - DynamoDB table for inventory
+- `BUDGETS_TABLE` - DynamoDB table for budgets (default: thirdshift-dev-budgets)
 - `MEAL_PLANS_BUCKET` - S3 bucket for detailed meal plans
 
 ## Input Format
@@ -135,6 +138,51 @@ The AI prompt includes:
 - S3 storage for detailed plans
 - Bedrock only when needed
 
+## Budget Integration
+
+The Menu Generator integrates with the Budget Tracker to ensure cost-conscious meal planning:
+
+### How It Works
+
+1. **Budget Retrieval**: Automatically fetches current budget from DynamoDB if not provided
+2. **Remaining Calculation**: Computes available budget (total - already spent)
+3. **AI Optimization**: Claude generates cost-effective recipes within budget
+4. **Cost Estimation**: Each meal and shopping item includes estimated cost
+5. **Validation**: Validates total cost against budget constraint
+
+### Usage
+
+**Option 1: Provide budget in request**
+```json
+{
+  "budget": 1200,
+  ...
+}
+```
+
+**Option 2: Auto-fetch from Budget Tracker**
+```json
+{
+  // No budget field - will fetch from DynamoDB
+  ...
+}
+```
+
+### Budget-Conscious AI Behavior
+
+The AI is instructed to:
+- Choose cost-effective ingredients
+- Prioritize affordable proteins (chicken, eggs, beans)
+- Use seasonal and common ingredients
+- Estimate realistic costs
+- Keep total under budget constraint
+
+### Documentation
+
+- **Integration Guide**: `BUDGET-INTEGRATION.md`
+- **Usage Guide**: `BUDGET-USAGE-GUIDE.md`
+- **Summary**: `../../BUDGET-INTEGRATION-SUMMARY.md`
+
 ## Requirements
 
 Implements requirements:
@@ -144,3 +192,4 @@ Implements requirements:
 - 7.4: Respect dietary restrictions
 - 9.2: Match cooking expertise
 - 10.1-10.3: School lunch planning
+- 11.2: Budget-aware meal planning

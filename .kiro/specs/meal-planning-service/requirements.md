@@ -165,10 +165,11 @@ The primary goals of the Meal Planning Service are to:
 #### Acceptance Criteria
 
 1. THE Budget Tracker SHALL allow users to set a weekly or monthly Food Budget limit
-2. WHEN generating the shopping list, THE Shopping Agent SHALL calculate the estimated total cost based on current Oda Integration pricing
-3. WHEN the estimated shopping cost exceeds the Food Budget, THE Shopping Agent SHALL optimize the shopping list to stay within budget by selecting lower-cost alternatives
-4. THE Budget Tracker SHALL track actual spending against the Food Budget and provide weekly spending reports
-5. THE Budget Tracker SHALL provide monthly summaries showing total spending, budget adherence, and cost savings compared to previous periods
+2. WHEN generating the weekly meal plan, THE Menu Generator SHALL use the AI Service to create recipes that respect the Food Budget constraint
+3. WHEN generating the shopping list, THE Shopping Agent SHALL calculate the estimated total cost based on current Oda Integration pricing
+4. WHEN the estimated shopping cost exceeds the Food Budget, THE Shopping Agent SHALL optimize the shopping list to stay within budget by selecting lower-cost alternatives
+5. THE Budget Tracker SHALL track actual spending against the Food Budget and provide weekly spending reports
+6. THE Budget Tracker SHALL provide monthly summaries showing total spending, budget adherence, and cost savings compared to previous periods
 
 ### Requirement 12
 

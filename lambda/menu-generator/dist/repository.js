@@ -10,6 +10,7 @@ const s3Client = new client_s3_1.S3Client({});
 const MEAL_PLANS_TABLE = process.env.MEAL_PLANS_TABLE || 'thirdshift-dev-meal-plans';
 const PROFILES_TABLE = process.env.PROFILES_TABLE || 'thirdshift-dev-profiles';
 const INVENTORY_TABLE = process.env.INVENTORY_TABLE || 'thirdshift-dev-inventory';
+const BUDGETS_TABLE = process.env.BUDGETS_TABLE || 'thirdshift-dev-budgets';
 const MEAL_PLANS_BUCKET = process.env.MEAL_PLANS_BUCKET || 'thirdshift-dev-meal-plans';
 class MenuRepository {
     async saveMealPlan(mealPlan) {
@@ -57,6 +58,21 @@ class MenuRepository {
             const expDate = new Date(item.expirationDate);
             return expDate <= thresholdDate && expDate >= today;
         });
+    }
+    async getCurrentBudget() {
+        try {
+            // Get the active budget (assuming there's a primary budget with a known ID)
+            // In a real implementation, this would query for the current period's budget
+            const result = await docClient.send(new lib_dynamodb_1.GetCommand({
+                TableName: BUDGETS_TABLE,
+                Key: { budgetId: 'primary' }
+            }));
+            return result.Item || null;
+        }
+        catch (error) {
+            console.error('Error fetching budget:', error);
+            return null;
+        }
     }
 }
 exports.MenuRepository = MenuRepository;

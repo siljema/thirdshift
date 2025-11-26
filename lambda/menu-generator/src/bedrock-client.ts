@@ -87,7 +87,8 @@ ${inventoryInfo}
 
 ${availabilityInfo}
 
-BUDGET: ${budget ? `${budget} NOK for the week` : 'No budget constraint'}
+BUDGET CONSTRAINT: ${budget ? `${budget} NOK available for this week's groceries` : 'No budget limit'}
+${budget ? `⚠️ IMPORTANT: Keep total estimated cost under ${budget} NOK. Choose cost-effective recipes and ingredients.` : ''}
 
 REQUIREMENTS:
 1. Generate 7 dinner recipes (Monday-Sunday)
@@ -102,14 +103,20 @@ REQUIREMENTS:
    - Match recipe difficulty to the assigned cook's expertise level
    - Adjust portion sizes based on who's present (see schedule)
    - If someone is absent, reduce portions or skip their dietary preferences
-7. Ensure variety (different cuisines, proteins, cooking methods)
-8. School lunches must be:
+7. STAY WITHIN BUDGET:
+   - Choose cost-effective ingredients and recipes
+   - Use affordable proteins (chicken, eggs, beans) more than expensive ones (beef, seafood)
+   - Prioritize seasonal and common ingredients
+   - Estimate realistic costs for each meal
+   - Total cost for all meals should be under the budget constraint
+8. Ensure variety (different cuisines, proteins, cooking methods)
+9. School lunches must be:
    - Portable and easy to pack
    - Age-appropriate for children (ages ${children.map(c => c.age).join(', ')})
    - Nutritious and balanced
    - No items requiring refrigeration if not available
    - Fun and appealing to kids
-9. SMART PLANNING:
+10. SMART PLANNING:
    - If fewer people for dinner, suggest simpler/smaller meals
    - If beginner cooking, keep it simple (<30 min, <10 steps)
    - If advanced cook, can do complex recipes

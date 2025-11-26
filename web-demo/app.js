@@ -231,26 +231,25 @@ async function testMenuGenerator() {
                     weekStartDate: '2025-12-02',
                     weekEndDate: '2025-12-08',
                     meals: [
-                        // Monday
-                        { date: '2025-12-02', mealType: 'dinner', recipeName: 'Gluten-Free Chicken Stir-Fry', servings: 4, cookingTime: 25, difficulty: 'intermediate', cost: 120 },
+                        // Monday - Child 1 away (only 3 people)
+                        { date: '2025-12-02', mealType: 'dinner', recipeName: 'Gluten-Free Chicken Stir-Fry (3 servings)', servings: 3, cookingTime: 25, difficulty: 'intermediate', cost: 90 },
                         { date: '2025-12-02', mealType: 'school_lunch', recipeName: 'Turkey Sandwich with Veggies (Child 1)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 40 },
                         { date: '2025-12-02', mealType: 'school_lunch', recipeName: 'Turkey Sandwich with Veggies (Child 2)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 40 },
                         // Tuesday
                         { date: '2025-12-03', mealType: 'dinner', recipeName: 'Easy Beef Tacos', servings: 4, cookingTime: 20, difficulty: 'beginner', cost: 110 },
                         { date: '2025-12-03', mealType: 'school_lunch', recipeName: 'Pasta Salad with Chicken (Child 1)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 45 },
                         { date: '2025-12-03', mealType: 'school_lunch', recipeName: 'Pasta Salad with Chicken (Child 2)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 45 },
-                        // Wednesday
-                        { date: '2025-12-04', mealType: 'dinner', recipeName: 'Baked Salmon with Roasted Vegetables', servings: 4, cookingTime: 35, difficulty: 'intermediate', cost: 150 },
+                        // Wednesday - Extra guest (5 people, vegetarian option)
+                        { date: '2025-12-04', mealType: 'dinner', recipeName: 'Mediterranean Vegetable Pasta (Guest-Friendly)', servings: 5, cookingTime: 30, difficulty: 'intermediate', cost: 130 },
                         { date: '2025-12-04', mealType: 'school_lunch', recipeName: 'Wraps with Ham and Cheese (Child 1)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 38 },
                         { date: '2025-12-04', mealType: 'school_lunch', recipeName: 'Wraps with Ham and Cheese (Child 2)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 38 },
                         // Thursday
                         { date: '2025-12-05', mealType: 'dinner', recipeName: 'Vegetable Curry with Rice', servings: 4, cookingTime: 40, difficulty: 'intermediate', cost: 95 },
                         { date: '2025-12-05', mealType: 'school_lunch', recipeName: 'Crackers with Cheese and Fruit (Child 1)', servings: 1, cookingTime: 5, difficulty: 'beginner', cost: 35 },
                         { date: '2025-12-05', mealType: 'school_lunch', recipeName: 'Crackers with Cheese and Fruit (Child 2)', servings: 1, cookingTime: 5, difficulty: 'beginner', cost: 35 },
-                        // Friday
+                        // Friday - Child 1 on field trip (only 1 school lunch needed)
                         { date: '2025-12-06', mealType: 'dinner', recipeName: 'Homemade Pizza Night', servings: 4, cookingTime: 45, difficulty: 'intermediate', cost: 85 },
-                        { date: '2025-12-06', mealType: 'school_lunch', recipeName: 'Mini Pizzas (Child 1)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 42 },
-                        { date: '2025-12-06', mealType: 'school_lunch', recipeName: 'Mini Pizzas (Child 2)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 42 },
+                        { date: '2025-12-06', mealType: 'school_lunch', recipeName: 'Mini Pizzas (Child 2 only - Child 1 on field trip)', servings: 1, cookingTime: 10, difficulty: 'beginner', cost: 42 },
                         // Saturday
                         { date: '2025-12-07', mealType: 'dinner', recipeName: 'BBQ Ribs with Coleslaw', servings: 4, cookingTime: 90, difficulty: 'advanced', cost: 180 },
                         // Sunday
@@ -285,6 +284,13 @@ async function testMenuGenerator() {
 
         const mealPlan = mockResponse.body.mealPlan;
 
+        // Mock budget data
+        const mockBudget = {
+            budgetLimit: 1200,
+            spent: 350, // Previous spending
+            remaining: 850
+        };
+
         resultDiv.className = 'result success';
         resultDiv.textContent = '✓ Success!\n\n' +
             `Generated ${mealPlan.meals.length} meals for the week\n` +
@@ -292,8 +298,8 @@ async function testMenuGenerator() {
             `Shopping Items: ${mealPlan.shoppingList.length}\n\n` +
             'Scroll down to see the full calendar view!';
 
-        // Render the meal plan calendar
-        renderMealPlanCalendar(mealPlan);
+        // Render the meal plan calendar with budget info
+        renderMealPlanCalendar(mealPlan, mockBudget);
 
     } catch (error) {
         resultDiv.className = 'result error';
@@ -305,16 +311,78 @@ async function testMenuGenerator() {
 }
 
 // Render meal plan in calendar view
-function renderMealPlanCalendar(mealPlan) {
+function renderMealPlanCalendar(mealPlan, budget) {
     const container = document.getElementById('meal-plan-calendar');
     const calendarGrid = document.getElementById('calendar-grid');
     const shoppingItems = document.getElementById('shopping-items');
+    const budgetStatus = document.getElementById('budget-status');
     
     // Update header info
     document.getElementById('week-range').textContent = 
         `${formatDate(mealPlan.weekStartDate)} - ${formatDate(mealPlan.weekEndDate)}`;
     document.getElementById('total-meals').textContent = mealPlan.meals.length;
     document.getElementById('total-cost').textContent = mealPlan.totalCost;
+
+    // Render budget status
+    if (budget) {
+        const newTotal = budget.spent + mealPlan.totalCost;
+        const percentageUsed = (newTotal / budget.budgetLimit * 100);
+        const isWithinBudget = newTotal <= budget.budgetLimit;
+        const isWarning = percentageUsed >= 80 && percentageUsed < 100;
+        const isOverBudget = percentageUsed >= 100;
+
+        let statusClass = 'within-budget';
+        let barClass = 'good';
+        let statusIcon = '✓';
+        let statusText = 'Within Budget';
+
+        if (isOverBudget) {
+            statusClass = 'over-budget';
+            barClass = 'danger';
+            statusIcon = '⚠️';
+            statusText = 'Over Budget';
+        } else if (isWarning) {
+            statusClass = 'warning';
+            barClass = 'warning';
+            statusIcon = '⚠️';
+            statusText = 'Approaching Limit';
+        }
+
+        budgetStatus.className = `budget-status ${statusClass}`;
+        budgetStatus.innerHTML = `
+            <div class="budget-header">
+                <span>${statusIcon}</span>
+                <span>Budget Status: ${statusText}</span>
+            </div>
+            <div class="budget-bar-container">
+                <div class="budget-bar ${barClass}" style="width: ${Math.min(percentageUsed, 100)}%">
+                    ${percentageUsed.toFixed(1)}%
+                </div>
+            </div>
+            <div class="budget-details">
+                <div class="budget-detail-item">
+                    <span class="budget-detail-label">Weekly Budget</span>
+                    <span class="budget-detail-value">${budget.budgetLimit} NOK</span>
+                </div>
+                <div class="budget-detail-item">
+                    <span class="budget-detail-label">Already Spent</span>
+                    <span class="budget-detail-value">${budget.spent} NOK</span>
+                </div>
+                <div class="budget-detail-item">
+                    <span class="budget-detail-label">This Order</span>
+                    <span class="budget-detail-value">${mealPlan.totalCost} NOK</span>
+                </div>
+                <div class="budget-detail-item">
+                    <span class="budget-detail-label">New Total</span>
+                    <span class="budget-detail-value" style="color: ${isOverBudget ? '#ff6b6b' : '#4caf50'}">${newTotal} NOK</span>
+                </div>
+                <div class="budget-detail-item">
+                    <span class="budget-detail-label">Remaining</span>
+                    <span class="budget-detail-value" style="color: ${isOverBudget ? '#ff6b6b' : '#4caf50'}">${Math.max(0, budget.budgetLimit - newTotal)} NOK</span>
+                </div>
+            </div>
+        `;
+    }
 
     // Group meals by date
     const mealsByDate = {};
@@ -418,6 +486,78 @@ function renderMealPlanCalendar(mealPlan) {
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Test Budget Tracker
+async function testBudgetTracker() {
+    const resultDiv = document.getElementById('budget-result');
+    const button = event.target;
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="loading"></span> Testing...';
+    resultDiv.style.display = 'block';
+    resultDiv.className = 'result';
+    resultDiv.textContent = 'Testing budget tracker...';
+
+    try {
+        // Mock budget tracker workflow
+        const mockBudget = {
+            budgetId: 'budget-' + Date.now(),
+            period: 'weekly',
+            startDate: '2025-12-02',
+            endDate: '2025-12-08',
+            budgetLimit: 1200,
+            spent: 850,
+            remaining: 350,
+            orders: ['order-1', 'order-2'],
+            alerts: [
+                {
+                    date: '2025-12-04',
+                    level: 'warning',
+                    percentage: 50,
+                    message: '50% of budget used',
+                    acknowledged: false
+                },
+                {
+                    date: '2025-12-06',
+                    level: 'warning',
+                    percentage: 80,
+                    message: '80% of budget used',
+                    acknowledged: false
+                }
+            ],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const percentageUsed = (mockBudget.spent / mockBudget.budgetLimit * 100).toFixed(1);
+        const alertsText = mockBudget.alerts.map(a => `  • ${a.message} (${a.date})`).join('\n');
+
+        resultDiv.className = 'result success';
+        resultDiv.textContent = '✓ Success! (Mock Response)\n\n' +
+            'Budget Status:\n' +
+            `• Period: ${mockBudget.period} (${mockBudget.startDate} to ${mockBudget.endDate})\n` +
+            `• Budget Limit: ${mockBudget.budgetLimit} NOK\n` +
+            `• Spent: ${mockBudget.spent} NOK (${percentageUsed}%)\n` +
+            `• Remaining: ${mockBudget.remaining} NOK\n` +
+            `• Orders: ${mockBudget.orders.length}\n\n` +
+            'Alerts:\n' + alertsText + '\n\n' +
+            'To test for real, use AWS CLI:\n' +
+            'AWS_CLI_BINARY_FORMAT=raw-in-base64-out aws lambda invoke \\\n' +
+            '  --function-name thirdshift-dev-budget-tracker \\\n' +
+            '  --payload \'{"action":"get-status","period":"weekly"}\' \\\n' +
+            '  --region us-west-2 response.json\n\n' +
+            'Full Response:\n' + JSON.stringify(mockBudget, null, 2);
+    } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '✗ Error:\n\n' + error.message;
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Test Budget Tracker';
+    }
 }
 
 // Load API URL from localStorage if available

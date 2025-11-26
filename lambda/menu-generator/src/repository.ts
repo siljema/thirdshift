@@ -10,6 +10,7 @@ const s3Client = new S3Client({});
 const MEAL_PLANS_TABLE = process.env.MEAL_PLANS_TABLE || 'thirdshift-dev-meal-plans';
 const PROFILES_TABLE = process.env.PROFILES_TABLE || 'thirdshift-dev-profiles';
 const INVENTORY_TABLE = process.env.INVENTORY_TABLE || 'thirdshift-dev-inventory';
+const BUDGETS_TABLE = process.env.BUDGETS_TABLE || 'thirdshift-dev-budgets';
 const MEAL_PLANS_BUCKET = process.env.MEAL_PLANS_BUCKET || 'thirdshift-dev-meal-plans';
 
 export class MenuRepository {
@@ -67,5 +68,21 @@ export class MenuRepository {
       const expDate = new Date(item.expirationDate);
       return expDate <= thresholdDate && expDate >= today;
     });
+  }
+
+  async getCurrentBudget(): Promise<any | null> {
+    try {
+      // Get the active budget (assuming there's a primary budget with a known ID)
+      // In a real implementation, this would query for the current period's budget
+      const result = await docClient.send(new GetCommand({
+        TableName: BUDGETS_TABLE,
+        Key: { budgetId: 'primary' }
+      }));
+
+      return result.Item || null;
+    } catch (error) {
+      console.error('Error fetching budget:', error);
+      return null;
+    }
   }
 }

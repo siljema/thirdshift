@@ -1,6 +1,6 @@
 import { BedrockClient } from './bedrock-client';
 import { MenuRepository } from './repository';
-import { MealPlan, MenuGenerationInput, Meal } from './types';
+import { MealPlan, MenuGenerationInput, Meal, BudgetInfo } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class MenuGenerator {
@@ -14,6 +14,26 @@ export class MenuGenerator {
     this.useBedrock = process.env.USE_BEDROCK === 'true';
   }
 
+  private async getBudgetInfo(): Promise<BudgetInfo | null> {
+    try {
+      const budgetData = await this.repository.getCurrentBudget();
+      if (!budgetData) {
+        console.log('No budget configured');
+        return null;
+      }
+
+      return {
+        totalBudget: budgetData.amount,
+        spent: budgetData.spent || 0,
+        remaining: budgetData.amount - (budgetData.spent || 0),
+        period: budgetData.period
+      };
+    } catch (error) {
+      console.warn('Could not fetch budget info:', error);
+      return null;
+    }
+  }
+
   async generateWeeklyMenu(input: MenuGenerationInput): Promise<MealPlan> {
     console.log('Generating weekly menu with input:', JSON.stringify(input, null, 2));
 
@@ -21,6 +41,7 @@ export class MenuGenerator {
     let profiles = input.profiles || [];
     let inventory = input.inventory || [];
     let expiringItems: any[] = [];
+    let budgetInfo: BudgetInfo | null = null;
 
     try {
       if (!input.profiles) {
@@ -30,6 +51,18 @@ export class MenuGenerator {
         inventory = await this.repository.getAllInventory();
       }
       expiringItems = await this.repository.getExpiringInventory(3);
+      
+      // Get budget info if not provided
+      if (!input.budget) {
+        budgetInfo = await this.getBudgetInfo();
+      } else {
+        budgetInfo = {
+          totalBudget: input.budget,
+          spent: 0,
+          remaining: input.budget,
+          period: 'weekly'
+        };
+      }
     } catch (error) {
       console.warn('Could not fetch from repository, using provided data:', error);
       // Calculate expiring items from provided inventory
@@ -45,13 +78,17 @@ export class MenuGenerator {
     }
 
     console.log(`Found ${profiles.length} profiles, ${inventory.length} inventory items, ${expiringItems.length} expiring items`);
+    if (budgetInfo) {
+      console.log(`Budget: ${budgetInfo.remaining} NOK remaining of ${budgetInfo.totalBudget} NOK (${budgetInfo.period})`);
+    }
 
-    // Generate meal plan
+    // Generate meal plan with budget constraint
     let meals: Meal[];
+    const budgetConstraint = budgetInfo?.remaining || input.budget;
     
     if (this.useBedrock) {
       try {
-        meals = await this.generateWithBedrock(profiles, inventory, expiringItems, input);
+        meals = await this.generateWithBedrock(profiles, inventory, expiringItems, input, budgetConstraint);
       } catch (error) {
         console.error('Bedrock generation failed, using mock:', error);
         meals = this.generateMockMeals(input.weekStartDate);
@@ -66,6 +103,14 @@ export class MenuGenerator {
 
     // Calculate total cost
     const totalCost = shoppingList.reduce((sum, item) => sum + (item.estimatedCost || 0), 0);
+
+    // Validate budget constraint
+    if (budgetConstraint && totalCost > budgetConstraint) {
+      console.warn(`Meal plan exceeds budget: ${totalCost} NOK > ${budgetConstraint} NOK`);
+      console.warn('Shopping Agent will need to optimize the shopping list');
+    } else if (budgetConstraint) {
+      console.log(`Meal plan within budget: ${totalCost} NOK <= ${budgetConstraint} NOK`);
+    }
 
     // Create meal plan
     const weekStart = input.weekStartDate || this.getNextMonday();
@@ -100,13 +145,14 @@ export class MenuGenerator {
     profiles: any[],
     inventory: any[],
     expiringItems: any[],
-    input: MenuGenerationInput
+    input: MenuGenerationInput,
+    budgetConstraint?: number
   ): Promise<Meal[]> {
     const prompt = this.bedrockClient.buildMealPlanPrompt({
       profiles,
       inventory,
       availability: input.availabilityMatrix,
-      budget: input.budget,
+      budget: budgetConstraint,
       expiringItems
     });
 
